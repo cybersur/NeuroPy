@@ -2,82 +2,84 @@ NeuroPy™ Core Security Libraries
 NeuroPy™ integrates advanced security modules to ensure safe, ethical, and robust AI operations. These libraries provide secure cognitive computing capabilities, protecting neural models from adversarial attacks, unauthorized access, and data tampering. Below is a structured list of NeuroPy™ Core Security Libraries:
 
 1. neuro.security.auth
-🔹 Authentication & Access Control
+  🔹 Authentication & Access Control
+  
+      Implements multi-factor authentication (MFA) for AI models.
+      Supports role-based access control (RBAC) for secured API calls.
+      Provides biometric authentication integration (face, fingerprint, voice).
+    
+      📌 Example Usage:
+      
+      python
+        from neuro.security.auth import RBAC
+        rbac = RBAC()
+        rbac.create_role("admin", permissions=["read", "write", "execute"])
+        rbac.assign_role("user123", "admin")
 
-Implements multi-factor authentication (MFA) for AI models.
-Supports role-based access control (RBAC) for secured API calls.
-Provides biometric authentication integration (face, fingerprint, voice).
-📌 Example Usage:
-
-python
-Copy
-Edit
-from neuro.security.auth import RBAC
-
-rbac = RBAC()
-rbac.create_role("admin", permissions=["read", "write", "execute"])
-rbac.assign_role("user123", "admin")
 2. neuro.security.encryption
-🔹 Secure Data Encryption & Hashing
+  🔹 Secure Data Encryption & Hashing
+  
+      Supports AES-256, RSA, and ECC encryption for AI model weights.
+      Implements homomorphic encryption for secure model inference.
+      Provides hashing algorithms (SHA-256, BLAKE2) for data integrity.
 
-Supports AES-256, RSA, and ECC encryption for AI model weights.
-Implements homomorphic encryption for secure model inference.
-Provides hashing algorithms (SHA-256, BLAKE2) for data integrity.
-📌 Example Usage:
+      📌 Example Usage:
+      
+      python
+   
+      from neuro.security.encryption import AES256
+      
+      aes = AES256(key="mysecurekey")
+      encrypted_data = aes.encrypt("Sensitive Information")
+      decrypted_data = aes.decrypt(encrypted_data)
 
-python
-Copy
-Edit
-from neuro.security.encryption import AES256
-
-aes = AES256(key="mysecurekey")
-encrypted_data = aes.encrypt("Sensitive Information")
-decrypted_data = aes.decrypt(encrypted_data)
 3. neuro.security.adversarial
-🔹 Adversarial Attack Detection & Defense
 
-Detects adversarial perturbations in neural networks.
-Implements gradient masking & adversarial training.
-Provides input validation against evasion attacks.
-📌 Example Usage:
+  🔹 Adversarial Attack Detection & Defense
+  
+    Detects adversarial perturbations in neural networks.
+    Implements gradient masking & adversarial training.
+    Provides input validation against evasion attacks.
 
-python
-Copy
-Edit
-from neuro.security.adversarial import AdversarialDefense
+    📌 Example Usage:
+    
+    python
+    
+    from neuro.security.adversarial import AdversarialDefense
+        defender = AdversarialDefense()
+    is_safe = defender.detect_attack(input_data)
 
-defender = AdversarialDefense()
-is_safe = defender.detect_attack(input_data)
 4. neuro.security.privacy
-🔹 Privacy-Preserving AI & Differential Privacy
 
-Implements differential privacy to prevent sensitive data leaks.
-Supports federated learning for decentralized model training.
-Provides zero-knowledge proof (ZKP) authentication.
-📌 Example Usage:
+  🔹 Privacy-Preserving AI & Differential Privacy
+  
+  Implements differential privacy to prevent sensitive data leaks.
+  Supports federated learning for decentralized model training.
+  Provides zero-knowledge proof (ZKP) authentication.
 
-python
-Copy
-Edit
-from neuro.security.privacy import DifferentialPrivacy
+  📌 Example Usage:
+  
+      python
+        from neuro.security.privacy import DifferentialPrivacy
+        dp = DifferentialPrivacy(epsilon=0.5)
+        private_data = dp.apply_noise(sensitive_data)
 
-dp = DifferentialPrivacy(epsilon=0.5)
-private_data = dp.apply_noise(sensitive_data)
 5. neuro.security.monitoring
-🔹 Real-time AI Security Monitoring & Logging
 
-Provides behavior anomaly detection for AI decision-making.
-Integrates with SIEM tools (Splunk, AWS CloudWatch, Azure Sentinel).
-Supports audit logging and compliance tracking.
-📌 Example Usage:
+  🔹 Real-time AI Security Monitoring & Logging
+  
+      Provides behavior anomaly detection for AI decision-making.
+      Integrates with SIEM tools (Splunk, AWS CloudWatch, Azure Sentinel).
+      Supports audit logging and compliance tracking.
 
-python
-Copy
-Edit
-from neuro.security.monitoring import AIThreatMonitor
+      📌 Example Usage:
+      
+      python
+        from neuro.security.monitoring import AIThreatMonitor
+        monitor = AIThreatMonitor()
+        monitor.log_event("Unusual model behavior detected")
 
-monitor = AIThreatMonitor()
-monitor.log_event("Unusual model behavior detected")
+
 6. neuro.security.network
 🔹 Secure AI Model Communications & API Protection
 

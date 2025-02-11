@@ -70,90 +70,93 @@ The NeuroPy™ Core Libraries are fundamental components within the framework, s
     - Dependencies:
 
     - nginx Code:
-      pip install numpy scipy torch torchvision matplotlib
+      
+           pip install numpy scipy torch torchvision matplotlib
 
 5.2. Installation
   To install NeuroPy™, clone the repository from GitHub and install the package:
   
-  - bash code: 
-    git close https://github.com/neuroPy/neuro.git
-    cd neuro
-    pip install -r requirement.txt
+  - bash code:
+
+        git close https://github.com/neuroPy/neuro.git
+        cd neuro
+        pip install -r requirement.txt
 
 
 5.3. Importing NeuroPy Modules
 
   - Python Code:
-    from neuro.core import Neuron
-    from neuro.learning import ReinforcementLearning
-    from neuro.memory import HopfieldNetwork
-    from neuro.predictive import PredictiveCoding
+    
+        from neuro.core import Neuron
+        from neuro.learning import ReinforcementLearning
+        from neuro.memory import HopfieldNetwork
+        from neuro.predictive import PredictiveCoding
 
 6. Example Usage
   6.1. Creating a Simple Neuron
     python
-    Copy
-    Edit
-    from neuro.core import Neuron
+
+           from neuro.core import Neuron
 
 # Initialize neuron with activation threshold
 
-    neuron = Neuron(threshold=0.8)
+        neuron = Neuron(threshold=0.8)
 
 # Stimulate neuron with an input signal
-output = neuron.activate(0.9)
+    output = neuron.activate(0.9)
+    print(f"Neuron Output: {output}")
 
-print(f"Neuron Output: {output}")
 6.2. Implementing a Reinforcement Learning Agent
+
 python
-Copy
-Edit
-from neuro.learning import QLearning
+
+
+          from neuro.learning import QLearning
 
 # Initialize agent
-agent = QLearning(states=5, actions=3, learning_rate=0.1, discount_factor=0.9)
+    agent = QLearning(states=5, actions=3, learning_rate=0.1, discount_factor=0.9)
 
 # Train the agent
-agent.learn(state=0, action=1, reward=10, next_state=2)
+    agent.learn(state=0, action=1, reward=10, next_state=2)  
+    
 6.3. Implementing Predictive Coding
 python
-Copy
-Edit
-from neuro.predictive import PredictiveModel
+
+    from neuro.predictive import PredictiveModel
 
 # Initialize model with sensory input
-model = PredictiveModel(input_dim=10, prediction_dim=5)
+    model = PredictiveModel(input_dim=10, prediction_dim=5)
 
 # Predict next sensory input
-prediction = model.predict(input_signal=[0.2, 0.4, 0.6, 0.8, 1.0])
+    prediction = model.predict(input_signal=[0.2, 0.4, 0.6, 0.8, 1.0])
+
 7. Roadmap & Future Development
 Enhancement of Neuromorphic Computing Integration
 Expansion of Real-Time Cognitive Robotics
 Development of SYN-02 for Advanced Autonomous Systems
 Cloud-based Neural Cognitive Networks (NCNs) Deployment
-8. Contributing
+
 8.1. Reporting Issues
 If you encounter bugs, submit an issue on GitHub:
 
 URL: GitHub Issues
 Format:
-diff
-Copy
-Edit
-- Title: Brief description of issue
-- Steps to Reproduce:
-- Expected Behavior:
-- Actual Behavior:
+
+    - Title: Brief description of issue
+    - Steps to Reproduce:
+    - Expected Behavior:
+    - Actual Behavior:
+
 8.2. Pull Requests
 Fork the repository and create a new branch:
+
 bash
-Copy
-Edit
-git checkout -b feature-branch
+
+    git checkout -b feature-branch
+
 Commit changes and push to your branch:
 bash
-Copy
-Edit
-git commit -m "Added new reinforcement learning function"
-git push origin feature-branch
-Submit a Pull Request via GitHub.
+
+    git commit -m "Added new reinforcement learning function"
+    git push origin feature-branch
+    Submit a Pull Request via GitHub.

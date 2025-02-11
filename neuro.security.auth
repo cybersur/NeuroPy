@@ -1,0 +1,147 @@
+#**********************************************************************
+#*** Created by: Dr. Garcia
+#*** Description:  Create a security fabric to proctect SYNC0-PB Proces architecture.
+#*** Updated:      2/10/2025
+#*** Created:      8/12/2011
+#**********************************************************************
+
+import hashlib
+import hmac
+import os
+import json
+import base64
+import time
+import jwt  # Requires PyJWT (pip install pyjwt)
+import qrcode  # Requires qrcode (pip install qrcode)
+from cryptography.fernet import Fernet  # Requires cryptography (pip install cryptography)
+
+class RBAC:
+    """Role-Based Access Control (RBAC) system for user authentication and authorization."""
+    
+    def __init__(self):
+        self.roles = {}  # Stores roles and permissions
+        self.users = {}  # Stores user-role assignments
+
+    def create_role(self, role_name, permissions=None):
+        """Create a new role with specified permissions."""
+        if permissions is None:
+            permissions = []
+        self.roles[role_name] = permissions
+
+    def assign_role(self, user, role_name):
+        """Assign a role to a user."""
+        if role_name in self.roles:
+            self.users[user] = role_name
+        else:
+            raise ValueError("Role does not exist")
+
+    def check_permission(self, user, permission):
+        """Check if a user has a specific permission."""
+        role = self.users.get(user)
+        if role and permission in self.roles.get(role, []):
+            return True
+        return False
+
+class TokenAuth:
+    """Implements JWT-based token authentication."""
+    
+    SECRET_KEY = os.environ.get("AUTH_SECRET_KEY", "default_secret")
+
+    @staticmethod
+    def generate_token(user_id, expiry_minutes=30):
+        """Generate a JWT authentication token."""
+        payload = {
+            "user_id": user_id,
+            "exp": time.time() + (expiry_minutes * 60)
+        }
+        return jwt.encode(payload, TokenAuth.SECRET_KEY, algorithm="HS256")
+
+    @staticmethod
+    def verify_token(token):
+        """Verify a JWT token and return decoded payload."""
+        try:
+            decoded = jwt.decode(token, TokenAuth.SECRET_KEY, algorithms=["HS256"])
+            return decoded
+        except jwt.ExpiredSignatureError:
+            return "Token expired"
+        except jwt.InvalidTokenError:
+            return "Invalid token"
+
+class MultiFactorAuth:
+    """Implements Multi-Factor Authentication (MFA) using OTP (One-Time Password)."""
+    
+    def __init__(self, secret_key=None):
+        self.secret_key = secret_key or base64.b32encode(os.urandom(10)).decode("utf-8")
+
+    def generate_qr_code(self, user_email):
+        """Generate QR Code for Google Authenticator."""
+        otp_url = f"otpauth://totp/NeuroPy:{user_email}?secret={self.secret_key}&issuer=NeuroPy"
+        qr = qrcode.make(otp_url)
+        qr.show()  # Displays QR Code
+
+    def verify_otp(self, otp, time_step=30):
+        """Verify user OTP (TOTP-based)."""
+        current_time = int(time.time() / time_step)
+        expected_otp = hmac.new(self.secret_key.encode(), str(current_time).encode(), hashlib.sha1).hexdigest()[:6]
+        return otp == expected_otp
+
+class BiometricAuth:
+    """Simulates biometric authentication using hashed biometric data."""
+
+    def __init__(self):
+        self.biometric_db = {}  # Stores biometric hashes for users
+
+    def register_biometric(self, user, biometric_data):
+        """Register biometric data (e.g., fingerprint, face scan) for a user."""
+        hashed_biometric = hashlib.sha256(biometric_data.encode()).hexdigest()
+        self.biometric_db[user] = hashed_biometric
+
+    def verify_biometric(self, user, biometric_data):
+        """Verify if biometric data matches registered hash."""
+        hashed_biometric = hashlib.sha256(biometric_data.encode()).hexdigest()
+        return self.biometric_db.get(user) == hashed_biometric
+
+class SecureSession:
+    """Implements session encryption for secure user authentication storage."""
+    
+    def __init__(self):
+        self.key = Fernet.generate_key()  # Symmetric encryption key
+        self.fernet = Fernet(self.key)
+
+    def encrypt_session(self, session_data):
+        """Encrypt session information."""
+        return self.fernet.encrypt(json.dumps(session_data).encode()).decode()
+
+    def decrypt_session(self, encrypted_data):
+        """Decrypt session information."""
+        return json.loads(self.fernet.decrypt(encrypted_data.encode()).decode())
+
+# Example Usage
+if __name__ == "__main__":
+    # Role-Based Access Control (RBAC) Example
+    rbac = RBAC()
+    rbac.create_role("admin", ["read", "write", "execute"])
+    rbac.assign_role("user123", "admin")
+    print("User has write permission:", rbac.check_permission("user123", "write"))
+
+    # Token Authentication Example
+    token = TokenAuth.generate_token("user123")
+    print("Generated Token:", token)
+    print("Verified Token:", TokenAuth.verify_token(token))
+
+    # Multi-Factor Authentication (MFA) Example
+    mfa = MultiFactorAuth()
+    mfa.generate_qr_code("user@example.com")  # Scan with Google Authenticator
+    otp = input("Enter OTP from Authenticator: ")
+    print("OTP Valid:", mfa.verify_otp(otp))
+
+    # Biometric Authentication Example
+    bio_auth = BiometricAuth()
+    bio_auth.register_biometric("user123", "fingerprint_data")
+    print("Biometric Match:", bio_auth.verify_biometric("user123", "fingerprint_data"))
+
+    # Secure Session Example
+    session = SecureSession()
+    encrypted = session.encrypt_session({"user": "user123", "role": "admin"})
+    print("Encrypted Session:", encrypted)
+    print("Decrypted Session:", session.decrypt_session(encrypted))

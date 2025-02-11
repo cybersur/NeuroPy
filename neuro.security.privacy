@@ -1,0 +1,13 @@
+#Privacy-Preserving AI & Differential Privacy
+
+#Implements differential privacy to prevent sensitive data leaks.
+#Supports federated learning for decentralized model training.
+#Provides zero-knowledge proof (ZKP) authentication.
+#📌 Example Usage:
+
+python
+
+    from neuro.security.privacy import DifferentialPrivacy
+    
+    dp = DifferentialPrivacy(epsilon=0.5)
+    private_data = dp.apply_noise(sensitive_data)

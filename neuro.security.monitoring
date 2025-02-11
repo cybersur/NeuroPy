@@ -1,0 +1,4 @@
+from neuro.security.monitoring import AIThreatMonitor
+
+monitor = AIThreatMonitor()
+monitor.log_event("Unusual model behavior detected")

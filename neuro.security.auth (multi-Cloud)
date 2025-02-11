@@ -1,0 +1,164 @@
+import hashlib
+import hmac
+import os
+import json
+import base64
+import time
+import jwt  # Requires PyJWT (pip install pyjwt)
+import qrcode  # Requires qrcode (pip install qrcode)
+import requests
+from cryptography.fernet import Fernet  # Requires cryptography (pip install cryptography)
+
+# Cloud SDKs (Ensure required SDKs are installed)
+try:
+    from azure.identity import DefaultAzureCredential  # pip install azure-identity
+    from google.auth.transport.requests import Request  # pip install google-auth
+    from google.oauth2 import id_token
+    import boto3  # pip install boto3
+    from ibm_cloud_sdk_core.authenticators import IAMAuthenticator  # pip install ibm-cloud-sdk-core
+except ImportError:
+    pass  # Install necessary packages for full cloud functionality
+
+class RBAC:
+    """Role-Based Access Control (RBAC) system for user authentication and authorization."""
+    
+    def __init__(self):
+        self.roles = {}  # Stores roles and permissions
+        self.users = {}  # Stores user-role assignments
+
+    def create_role(self, role_name, permissions=None):
+        if permissions is None:
+            permissions = []
+        self.roles[role_name] = permissions
+
+    def assign_role(self, user, role_name):
+        if role_name in self.roles:
+            self.users[user] = role_name
+        else:
+            raise ValueError("Role does not exist")
+
+    def check_permission(self, user, permission):
+        role = self.users.get(user)
+        if role and permission in self.roles.get(role, []):
+            return True
+        return False
+
+class TokenAuth:
+    """Implements JWT-based token authentication."""
+    
+    SECRET_KEY = os.environ.get("AUTH_SECRET_KEY", "default_secret")
+
+    @staticmethod
+    def generate_token(user_id, expiry_minutes=30):
+        payload = {"user_id": user_id, "exp": time.time() + (expiry_minutes * 60)}
+        return jwt.encode(payload, TokenAuth.SECRET_KEY, algorithm="HS256")
+
+    @staticmethod
+    def verify_token(token):
+        try:
+            decoded = jwt.decode(token, TokenAuth.SECRET_KEY, algorithms=["HS256"])
+            return decoded
+        except jwt.ExpiredSignatureError:
+            return "Token expired"
+        except jwt.InvalidTokenError:
+            return "Invalid token"
+
+class MultiFactorAuth:
+    """Implements Multi-Factor Authentication (MFA) using OTP."""
+    
+    def __init__(self, secret_key=None):
+        self.secret_key = secret_key or base64.b32encode(os.urandom(10)).decode("utf-8")
+
+    def generate_qr_code(self, user_email):
+        otp_url = f"otpauth://totp/NeuroPy:{user_email}?secret={self.secret_key}&issuer=NeuroPy"
+        qr = qrcode.make(otp_url)
+        qr.show()
+
+    def verify_otp(self, otp, time_step=30):
+        current_time = int(time.time() / time_step)
+        expected_otp = hmac.new(self.secret_key.encode(), str(current_time).encode(), hashlib.sha1).hexdigest()[:6]
+        return otp == expected_otp
+
+class CloudAuth:
+    """Integrates authentication with major cloud providers."""
+    
+    def aws_auth(self):
+        """Authenticate using AWS IAM."""
+        session = boto3.Session()
+        credentials = session.get_credentials()
+        return credentials.get_frozen_credentials()
+
+    def azure_auth(self):
+        """Authenticate using Azure Active Directory."""
+        credential = DefaultAzureCredential()
+        token = credential.get_token("https://management.azure.com/.default")
+        return token.token
+
+    def gcp_auth(self, client_id, audience):
+        """Authenticate using Google Cloud IAM."""
+        return id_token.fetch_id_token(Request(), audience)
+
+    def ibm_auth(self, api_key):
+        """Authenticate using IBM Cloud IAM."""
+        authenticator = IAMAuthenticator(api_key)
+        return authenticator.get_token()
+
+    def digitalocean_auth(self, api_token):
+        """Authenticate using DigitalOcean API Token."""
+        headers = {"Authorization": f"Bearer {api_token}"}
+        response = requests.get("https://api.digitalocean.com/v2/account", headers=headers)
+        return response.json()
+
+class BiometricAuth:
+    """Simulates biometric authentication using hashed biometric data."""
+
+    def __init__(self):
+        self.biometric_db = {}
+
+    def register_biometric(self, user, biometric_data):
+        hashed_biometric = hashlib.sha256(biometric_data.encode()).hexdigest()
+        self.biometric_db[user] = hashed_biometric
+
+    def verify_biometric(self, user, biometric_data):
+        hashed_biometric = hashlib.sha256(biometric_data.encode()).hexdigest()
+        return self.biometric_db.get(user) == hashed_biometric
+
+class SecureSession:
+    """Implements session encryption for secure user authentication storage."""
+    
+    def __init__(self):
+        self.key = Fernet.generate_key()
+        self.fernet = Fernet(self.key)
+
+    def encrypt_session(self, session_data):
+        return self.fernet.encrypt(json.dumps(session_data).encode()).decode()
+
+    def decrypt_session(self, encrypted_data):
+        return json.loads(self.fernet.decrypt(encrypted_data.encode()).decode())
+
+# Example Usage
+if __name__ == "__main__":
+    # RBAC Example
+    rbac = RBAC()
+    rbac.create_role("admin", ["read", "write", "execute"])
+    rbac.assign_role("user123", "admin")
+    print("User has write permission:", rbac.check_permission("user123", "write"))
+
+    # Token Authentication Example
+    token = TokenAuth.generate_token("user123")
+    print("Generated Token:", token)
+    print("Verified Token:", TokenAuth.verify_token(token))
+
+    # Multi-Factor Authentication (MFA) Example
+    mfa = MultiFactorAuth()
+    mfa.generate_qr_code("user@example.com")  
+    otp = input("Enter OTP from Authenticator: ")
+    print("OTP Valid:", mfa.verify_otp(otp))
+
+    # Cloud Authentication Example
+    cloud_auth = CloudAuth()
+    print("AWS IAM Credentials:", cloud_auth.aws_auth())
+    print("Azure Token:", cloud_auth.azure_auth())
+    print("GCP Token:", cloud_auth.gcp_auth("your-gcp-client-id", "your-audience"))
+    print("IBM Token:", cloud_auth.ibm_auth("your-ibm-api-key"))
+    print("DigitalOcean Account Info:", cloud_auth.digitalocean_auth("your-do-api-token"))

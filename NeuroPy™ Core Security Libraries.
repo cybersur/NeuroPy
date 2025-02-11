@@ -81,32 +81,31 @@ NeuroPy™ integrates advanced security modules to ensure safe, ethical, and rob
 
 
 6. neuro.security.network
-🔹 Secure AI Model Communications & API Protection
 
-Implements SSL/TLS encryption for API calls.
-Detects DDoS and MITM attacks in AI model communication.
-Provides firewall rules for AI model access control.
-📌 Example Usage:
+    🔹 Secure AI Model Communications & API Protection
+    
+    Implements SSL/TLS encryption for API calls.
+    Detects DDoS and MITM attacks in AI model communication.
+    Provides firewall rules for AI model access control.
 
-python
-Copy
-Edit
-from neuro.security.network import SecureAPI
+      📌 Example Usage:
+      
+      python
+      from neuro.security.network import SecureAPI
+      api = SecureAPI()
+      api.enable_tls("cert.pem", "key.pem")
 
-api = SecureAPI()
-api.enable_tls("cert.pem", "key.pem")
 7. neuro.security.trust
-🔹 AI Trust, Explainability & Ethics
 
-Implements model explainability (XAI) algorithms.
-Supports bias detection & fairness auditing.
-Provides AI ethical governance compliance (GDPR, HIPAA, ISO 27001).
-📌 Example Usage:
+  🔹 AI Trust, Explainability & Ethics
+  
+    Implements model explainability (XAI) algorithms.
+    Supports bias detection & fairness auditing.
+    Provides AI ethical governance compliance (GDPR, HIPAA, ISO 27001).
 
-python
-Copy
-Edit
-from neuro.security.trust import BiasDetector
-
-detector = BiasDetector()
-bias_score = detector.analyze(model_predictions)
+    📌 Example Usage:
+    
+        python
+        from neuro.security.trust import BiasDetector
+        detector = BiasDetector()
+        bias_score = detector.analyze(model_predictions)

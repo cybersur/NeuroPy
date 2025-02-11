@@ -1,0 +1,4 @@
+from neuro.security.network import SecureAPI
+
+api = SecureAPI()
+api.enable_tls("cert.pem", "key.pem")

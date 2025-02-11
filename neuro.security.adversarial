@@ -1,0 +1,12 @@
+🔹 Adversarial Attack Detection & Defense
+
+Detects adversarial perturbations in neural networks.
+Implements gradient masking & adversarial training.
+Provides input validation against evasion attacks.
+
+📌 Example Usage:
+
+      from neuro.security.adversarial import AdversarialDefense
+      
+      defender = AdversarialDefense()
+      is_safe = defender.detect_attack(input_data)

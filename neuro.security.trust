@@ -1,0 +1,4 @@
+from neuro.security.trust import BiasDetector
+
+detector = BiasDetector()
+bias_score = detector.analyze(model_predictions)
